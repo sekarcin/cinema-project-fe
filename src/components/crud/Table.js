@@ -1,33 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 
-const TableInput = ({ editData, bukti}) => {
-
+const TableInput = ({ editData }) => {
   const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/bioskops');
+        setData(response.data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const hapusData = async (id) => {
     try {
-      const response = await fetch('http://localhost:8080/api/bioskops/${id}', {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Gagal menghapus data');
-      }
-
-      // Hapus data dari state setelah berhasil dihapus dari database
-      setData(data.filter(item => item.id !== id));
-
+      await axios.delete(`http://localhost:8080/api/bioskops/${id}`);
+      setData(data.filter((item) => item.id !== id));
     } catch (error) {
-      console.error('Gagal menghapus data:', error);
+      console.error('Error deleting data:', error);
     }
   };
-  useEffect(() => {
-    fetch('http://localhost:8080/api/bioskops')
-      .then(response => response.json())
-      .then(data => setData(data))
-      .catch(error => console.error('Error:', error));
-  }, []);
-  
+
   return (
     <Table striped bordered hover>
       <thead>
@@ -44,29 +43,25 @@ const TableInput = ({ editData, bukti}) => {
         </tr>
       </thead>
       <tbody>
-      {data.map((daftar, index) => (
-            
-        <tr key={index}>
-          <td>{index + 1 }</td>
-          <td>{daftar.namaPembeli}</td>
-          <td>{daftar.film}</td>
-          <td>{daftar.hariTanggal}</td>
-          <td>{daftar.jamTayang}</td>
-          <td>{daftar.hargaFilm}</td>
-          <td>{daftar.jumlahPesanan}</td>
-          <td>{daftar.totalHarga}</td>
-          <td>
-            <button className="btn btn-warning mr-1" onClick={() => editData(daftar.id)}>Edit</button>
-            <button className="btn btn-danger mr-1" onClick={() => hapusData(daftar.id)}>Hapus</button>
-            <button className="btn btn-danger mr-1" onClick={() => bukti()}>Bukti</button>
-          </td>
-        </tr>
-            )
-        }
-            
-    </tbody>
+        {data.map((daftar, index) => (
+          <tr key={daftar.id}>
+            <td>{index + 1}</td>
+            <td>{daftar.nama}</td>
+            <td>{daftar.pilihanFilm}</td>
+            <td>{daftar.tanggal.split('T')[0]}</td>
+            <td>{daftar.jamTayang}</td>
+            <td>{daftar.harga}</td>
+            <td>{daftar.jumlahBeli}</td>
+            <td>{daftar.total}</td>
+            <td>
+              <button className="btn btn-warning mr-1" onClick={() => editData(daftar.id)}>Edit</button>
+              <button className="btn btn-danger mr-1" onClick={() => hapusData(daftar.id)}>Hapus</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
     </Table>
   );
-}
+};
 
 export default TableInput;

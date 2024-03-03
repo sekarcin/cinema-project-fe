@@ -4,23 +4,22 @@ import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 
 const Formulir = ({
-  namaPembeli,
-  film,
-  hariTanggal,
+  nama,
+  pilihanFilm,
+  tanggal,
   jamTayang,
-  hargaFilm,
-  jumlahPesan,
-  totalHarga,
+  harga,
+  jumlahBeli,
+  total,
   handleChange,
-  // notifySuccess,
   id,
 }) => {
   const [submitSuccess, setSubmitSuccess] = React.useState(false);
-  const apiUrl = process.env.REACT_APP_API_URL;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formData = { namaPembeli, film, hariTanggal, jamTayang, hargaFilm, jumlahPesan, totalHarga };
-  
+    const formData = { nama, pilihanFilm, tanggal, jamTayang, harga, jumlahBeli, total };
+
     try {
       const response = await fetch(`http://localhost:8080/api/bioskops`, {
         method: 'POST',
@@ -29,11 +28,10 @@ const Formulir = ({
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (response.ok) {
         console.log('Submit berhasil');
-        // Anda bisa menambahkan logika untuk membersihkan form atau redirect
-        setSubmitSuccess(true); // Pastikan fungsi ini dijalankan di tempat yang tepat
+        setSubmitSuccess(true);
       } else {
         console.error('Submit gagal');
       }
@@ -41,42 +39,47 @@ const Formulir = ({
       console.error('Error:', error);
     }
   };
-  
-  console.log("namaPembeli", namaPembeli);
+
+  console.log("nama", nama);
   return (
     <div className="mt-5">
       <h4>{id ? "Edit Data" : "Tambah Data"}</h4>
       <hr />
+      {submitSuccess && (
+          <div className="alert alert-success mt-3" role="alert">
+            Submit berhasil! Tiket Bioskop Atas Nama {nama} Telah Berhasil Diinput, Silahkan Cetak Tiket.
+          </div>
+        )}
       <Form onSubmit={handleSubmit}>
-        <Form.Group className="mb-3" controlId="namaPembeli">
+        <Form.Group className="mb-3" controlId="nama">
           <Form.Label>Nama Pembeli</Form.Label>
           <Form.Control
-            type="Text"
+            type="text"
             placeholder="Masukan Nama"
-            name="namaPembeli"
-            value={namaPembeli}
-            onChange={(event) => handleChange(event)}
+            name="nama"
+            value={nama}
+            onChange={handleChange}
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="film">
+        <Form.Group className="mb-3" controlId="pilihanFilm">
           <Form.Label>Nama Film</Form.Label>
           <Form.Control
-            type="Text"
+            type="text"
             placeholder="Masukan Nama Film"
-            name="film"
-            value={film}
-            onChange={(event) => handleChange(event)}
+            name="pilihanFilm"
+            value={pilihanFilm}
+            onChange={handleChange}
           />
         </Form.Group>
 
-        <Form.Group className="mb-3" controlId="hariTanggal">
-          <Form.Label>Hari/Tanggal</Form.Label>
+        <Form.Group className="mb-3" controlId="tanggal">
+          <Form.Label>Tanggal</Form.Label>
           <Form.Control
             type="date"
-            name="hariTanggal"
-            value={hariTanggal}
-            onChange={(event) => handleChange(event)}
+            name="tanggal"
+            value={tanggal}
+            onChange={handleChange}
           />
         </Form.Group>
 
@@ -86,37 +89,39 @@ const Formulir = ({
             type="time"
             name="jamTayang"
             value={jamTayang}
-            onChange={(event) => handleChange(event)}
+            onChange={handleChange}
           />
         </Form.Group>
 
-        <InputGroup className="mb-3" controlId="hargaFilm">
+        <InputGroup className="mb-3" controlId="harga">
           <InputGroup.Text>Rp</InputGroup.Text>
           <Form.Control
-            name="hargaFilm"
-            value={hargaFilm}
-            onChange={(event) => handleChange(event)}
+            type="number"
+            name="harga"
+            value={harga}
+            onChange={handleChange}
           />
           <InputGroup.Text>,00</InputGroup.Text>
         </InputGroup>
 
-        <Form.Group className="mb-3" controlId="jumlahPesan">
+        <Form.Group className="mb-3" controlId="jumlahBeli">
           <Form.Label>Jumlah Pesan</Form.Label>
           <Form.Control
             type="number"
             placeholder="Masukan Jumlah"
-            name="jumlahPesan"
-            value={jumlahPesan}
-            onChange={(event) => handleChange(event)}
+            name="jumlahBeli"
+            value={jumlahBeli}
+            onChange={handleChange}
           />
         </Form.Group>
 
-        <InputGroup className="mb-3" controlId="totalHarga">
+        <InputGroup className="mb-3" controlId="total">
           <InputGroup.Text>Rp</InputGroup.Text>
           <Form.Control
-            name="totalHarga"
-            value={totalHarga}
-            onChange={(event) => handleChange(event)}
+            type="number"
+            name="total"
+            value={total}
+            onChange={handleChange}
           />
           <InputGroup.Text>,00</InputGroup.Text>
         </InputGroup>
@@ -124,12 +129,7 @@ const Formulir = ({
         <Button variant="primary" type="submit">
           Submit
         </Button>
-        {/* Notifikasi berhasil */}
-        {submitSuccess && (
-          <div className="alert alert-success mt-3" role="alert">
-            Submit berhasil! Tiket Bioskop Atas Nama {namaPembeli} Telah Berhasil Diinput, Silahkan Cetak Tiket.
-          </div>
-        )}
+   
       </Form>
     </div>
   );
